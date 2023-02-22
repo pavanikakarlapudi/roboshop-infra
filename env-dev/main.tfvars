@@ -1,5 +1,6 @@
 env            = "dev"
 default_vpc_id = "vpc-0a7931ca7fa7ad5a2"
+bastion_cidr   = ["172.31.12.243/32"]
 
 vpc = {
   main = {
@@ -35,8 +36,87 @@ vpc = {
 
 docdb = {
   main = {
-    vpc_name       = "main"
-    subnets_name   = "db"
-    engine_version = "4.0.0"
+    vpc_name            = "main"
+    subnets_name        = "db"
+    engine_version      = "4.0.0"
+    number_of_instances = 1
+    instance_class      = "db.t3.medium"
+  }
+}
+
+rds = {
+  main = {
+    vpc_name            = "main"
+    subnets_name        = "db"
+    engine              = "aurora-mysql"
+    engine_version      = "5.7.mysql_aurora.2.11.1"
+    number_of_instances = 1
+    instance_class      = "db.t3.small"
+  }
+}
+
+elasticache = {
+  main = {
+    vpc_name                = "main"
+    subnets_name            = "db"
+    num_node_groups         = 2
+    replicas_per_node_group = 1
+    node_type               = "cache.t3.micro"
+  }
+}
+
+rabbitmq = {
+  main = {
+    vpc_name           = "main"
+    subnets_name       = "db"
+    engine_type        = "RabbitMQ"
+    engine_version     = "3.10.10"
+    host_instance_type = "mq.t3.micro"
+    deployment_mode    = "SINGLE_INSTANCE"
+  }
+}
+
+alb = {
+  public = {
+    vpc_name     = "main"
+    subnets_type = "public_subnet_ids"
+    subnets_name = "public"
+    internal     = false
+  }
+
+  private = {
+    vpc_name     = "main"
+    subnets_type = "private_subnet_ids"
+    subnets_name = "app"
+    internal     = true
+  }
+}
+
+apps = {
+  frontend = {
+    component               = "frontend"
+    vpc_name                = "main"
+    subnets_type            = "private_subnet_ids"
+    subnets_name            = "web"
+    allow_cidr_subnets_type = "public_subnets"
+    allow_cidr_subnets_name = "public"
+    app_port                = 80
+    max_size                = 2
+    min_size                = 1
+    desired_capacity        = 1
+    instance_type           = "t3.micro"
+  }
+  catalogue = {
+    component               = "catalogue"
+    vpc_name                = "main"
+    subnets_type            = "private_subnet_ids"
+    subnets_name            = "app"
+    app_port                = 8080
+    allow_cidr_subnets_type = "private_subnets"
+    allow_cidr_subnets_name = "app"
+    max_size                = 2
+    min_size                = 1
+    desired_capacity        = 1
+    instance_type           = "t3.micro"
   }
 }
