@@ -99,12 +99,12 @@ module "apps" {
   desired_capacity  = each.value.desired_capacity
   instance_type     = each.value.instance_type
   listener_priority = each.value.listener_priority
-  bastion_cidr = var.bastion_cidr
 
+  bastion_cidr = var.bastion_cidr
+  monitor_cidr = var.monitor_cidr
 
 }
 
 output "alb" {
   value = module.alb
 }
-
